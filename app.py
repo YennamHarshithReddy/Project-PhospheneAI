@@ -1,7 +1,8 @@
 import streamlit as st
+import os
 from langchain.vectorstores import FAISS
 from sentence_transformers import SentenceTransformer
-import os
+from collections import Counter
 
 # Paths
 index_dir = "faiss_index"
@@ -21,18 +22,24 @@ st.title("📰 News Q&A (with Citations)")
 query = st.text_input("Ask a question about the news:", "")
 
 if query:
-    # Search top 1 doc
-    results = db.similarity_search(query, k=1)
+    # Search top 3 docs
+    results = db.similarity_search(query, k=3)
 
-    # Combine answer from docs
-    answer_parts = [doc.page_content for doc in results]
+    # Find the most common source among retrieved docs
+    sources = [doc.metadata.get("source", "Unknown") for doc in results]
+    majority_source = Counter(sources).most_common(1)[0][0]
+
+    # Keep only docs from the majority source
+    filtered_results = [doc for doc in results if doc.metadata.get("source") == majority_source]
+
+    # Combine answer from the filtered docs
+    answer_parts = [doc.page_content for doc in filtered_results]
     final_answer = " ".join(answer_parts)
 
+    # Show answer
     st.subheader("Answer:")
     st.write(final_answer)
 
-    # Show citations
+    # ✅ Show citations only from filtered results
     st.subheader("Citations:")
-    for i, doc in enumerate(results, 1):
-        source = doc.metadata.get("source", "Unknown")
-        st.markdown(f"**{i}.** {source}")
+    st.markdown(f"**1.** {majority_source}")
