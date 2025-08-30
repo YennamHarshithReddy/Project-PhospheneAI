@@ -1,0 +1,6 @@
+streamlit
+langchain
+faiss-cpu
+beautifulsoup4
+sentence-transformers
+requests
