@@ -21,8 +21,8 @@ st.title("📰 News Q&A (with Citations)")
 query = st.text_input("Ask a question about the news:", "")
 
 if query:
-    # Search top 3 docs
-    results = db.similarity_search(query, k=3)
+    # Search top 1 doc
+    results = db.similarity_search(query, k=1)
 
     # Combine answer from docs
     answer_parts = [doc.page_content for doc in results]

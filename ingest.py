@@ -3,6 +3,7 @@ import zipfile
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # Paths
 zip_path = "data/news/news.zip"
@@ -25,8 +26,14 @@ for fname in os.listdir(extract_dir):
         with open(fpath, "r", encoding="utf-8") as f:
             text = f.read()
 
-        # Chunking
-        chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+        # Sentence-aware chunking (better than raw 500 chars)
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=800,     # ~600–800 chars per chunk
+            chunk_overlap=100,  # keeps context across chunks
+            separators=["\n\n", ".", "?", "!", ";", ":", " ", ""]
+        )
+        chunks = splitter.split_text(text)
+
         for chunk in chunks:
             docs.append(Document(page_content=chunk, metadata={"source": fname}))
 
