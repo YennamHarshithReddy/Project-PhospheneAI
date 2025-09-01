@@ -23,7 +23,7 @@ query = st.text_input("Ask a question about the news:", "")
 
 if query:
     # Search top 3 docs
-    results = db.similarity_search(query, k=3)
+    results = db.similarity_search(query, k=4)
 
     # Find the most common source among retrieved docs
     sources = [doc.metadata.get("source", "Unknown") for doc in results]
