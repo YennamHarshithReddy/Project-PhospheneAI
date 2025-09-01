@@ -1,8 +1,10 @@
 import streamlit as st
 import os
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 from collections import Counter
+
 
 # Paths
 index_dir = "faiss_index"
